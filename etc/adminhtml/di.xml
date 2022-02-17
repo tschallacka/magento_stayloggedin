@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Security\Model\AdminSessionInfo">
+        <plugin name="tschallacka_stayloggedin_plugins_adminSessioninfoplugin"
+        disabled="false"
+        type="Tschallacka\StayLoggedIn\Plugin\AdminSessionInfoPlugin"
+        sortOrder="10"/>
+    </type>
+    <type name="Magento\Framework\Session\Storage">
+        <plugin name="tschallacka_stayloggedin_plugin_backendsessionplugin"
+                disabled="false"
+                type="Tschallacka\StayLoggedIn\Plugin\BackendSessionPlugin"
+                sortOrder="10" />
+    </type>
+</config>
