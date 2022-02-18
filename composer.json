@@ -1,12 +1,11 @@
 {
   "name": "tschallacka/stay-logged-in",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "type": "magento2-module",
   "require": {
     "magento/framework": "*",
-    "magento/module-backend": "102.0.*",
-    "magento/module-login-as-customer-admin-ui": "100.4.*"
+    "magento/module-backend": "*"
   },
   "license": [
     "Proprietary"
