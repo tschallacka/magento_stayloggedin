@@ -11,7 +11,9 @@ use Magento\Security\Model\AdminSessionInfo;
 class AdminSessionInfoPlugin
 {
     const STATUS_KEY = 'status';
-    private Storage $storage;
+    /** No actual type hints because of php 7.3 compatiblity with older versions. */
+    /** @var Storage $storage */
+    private $storage;
 
     public function __construct(
         Storage $storage
