@@ -3,6 +3,7 @@
 namespace Tschallacka\StayLoggedIn\Plugin;
 
 use Magento\Framework\Session\Storage;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Security\Model\AdminSessionInfo;
 
 /**
@@ -11,13 +12,17 @@ use Magento\Security\Model\AdminSessionInfo;
 class AdminSessionInfoPlugin
 {
     const STATUS_KEY = 'status';
+    const UPDATED_AT_KEY = 'updated_at';
     private Storage $storage;
+    private DateTime $dateTime;
 
     public function __construct(
-        Storage $storage
+        Storage $storage,
+        DateTime $dateTime
     )
     {
         $this->storage = $storage;
+        $this->dateTime = $dateTime;
     }
 
     public function aroundSetData(AdminSessionInfo $orig, $call, $key, $value=null)
@@ -32,15 +37,21 @@ class AdminSessionInfoPlugin
 
     public function aroundGetData(AdminSessionInfo $orig, $call, $key = null)
     {
+        $user = $this->storage->getData(BackendSessionPlugin::KEY);
         if($key === self::STATUS_KEY) {
-            if($this->storage->getData(BackendSessionPlugin::KEY)) {
+            if ($user) {
                 return AdminSessionInfo::LOGGED_IN;
+            }
+        } elseif ($key === self::UPDATED_AT_KEY) {
+            if ($user) {
+                return $this->dateTime->gmtTimestamp();
             }
         }
         if(is_null($key)) {
-            if($this->storage->getData(BackendSessionPlugin::KEY)) {
+            if($user) {
                 $data = $call();
                 $data[self::STATUS_KEY] = AdminSessionInfo::LOGGED_IN;
+                $data[self::UPDATED_AT_KEY] = $this->dateTime->gmtTimestamp();
                 return $data;
             }
         }
