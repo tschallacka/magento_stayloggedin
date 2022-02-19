@@ -13,8 +13,12 @@ class AdminSessionInfoPlugin
 {
     const STATUS_KEY = 'status';
     const UPDATED_AT_KEY = 'updated_at';
-    private Storage $storage;
-    private DateTime $dateTime;
+    /** No actual type hints because of php 7.3 compatiblity with older versions. */
+    /** @var DateTime $storage */
+    private $dateTime;
+    /** No actual type hints because of php 7.3 compatiblity with older versions. */
+    /** @var Storage $storage */
+    private $storage;
 
     public function __construct(
         Storage $storage,

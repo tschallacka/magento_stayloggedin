@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Tschallacka\StayLoggedIn\Plugin;
 
 use Magento\Backend\Model\Auth\Session;
@@ -29,15 +31,26 @@ class BackendSessionPlugin
     const IS_FIRST_VISIT = 'is_first_visit';
     const COOKIE = 'tsch_stayloggedin';
     const STATUS = 'status';
-    private State $state;
-    private CookieManagerInterface $cookieManager;
-    private CookieMetadataFactory $cookieMetadataFactory;
-    private LoggerInterface $logger;
-    private EncryptorInterface $encryptor;
-    private UserResource $user_resource;
-    private UserFactory $user_factory;
-    private Session $backend_session;
-    private RequestInterface $request;
+
+    /** No actual type hints because of php 7.3 compatiblity with older versions. */
+    /** @var State $state */
+    private $state;
+    /** @var CookieManagerInterface $cookieManager */
+    private $cookieManager;
+    /** @var CookieMetadataFactory $cookieMetadataFactory */
+    private $cookieMetadataFactory;
+    /** @var LoggerInterface $logger */
+    private $logger;
+    /** @var EncryptorInterface $encryptor */
+    private $encryptor;
+    /** @var UserResource $user_resource */
+    private $user_resource;
+    /** @var UserFactory $user_factory */
+    private $user_factory;
+    /** @var Session $backend_session */
+    private $backend_session;
+    /** @var RequestInterface $request */
+    private $request;
 
     public function __construct(
         State $state,
@@ -49,9 +62,7 @@ class BackendSessionPlugin
         UserResource $user_resource,
         UserFactory $user_factory,
         RequestInterface $request
-    )
-    {
-
+    ) {
         $this->state = $state;
         $this->cookieManager = $cookieManager;
         $this->cookieMetadataFactory = $cookieMetadataFactory;
@@ -70,28 +81,31 @@ class BackendSessionPlugin
          * change per request. #phpismeanttodie
          */
         static $pass;
-        if(is_null($pass)) {
+        if (is_null($pass)) {
             $pass = $this->state->getAreaCode() === Area::AREA_ADMINHTML
-                    && State::MODE_DEVELOPER === $this->state->getMode();
+                && State::MODE_DEVELOPER === $this->state->getMode();
         }
         $data = $orig($key);
         if ($pass && $key === self::KEY) {
-            if(is_null($data)) {
+            if (is_null($data)) {
                 $cookie = $this->getCustomCookie();
-                if(is_numeric($cookie)) {
-                    $this->logger->alert('Renewing backend session for user id '.$cookie);
+                if (is_numeric($cookie)) {
+                    $this->logger->alert('Renewing backend session for user id ' . $cookie);
                     $this->backend_session->regenerateId();
                     $user = $this->user_factory->create();
                     $this->user_resource->load($user, $cookie, $user->getIdFieldName());
                     $data = $user;
-                    $session_storage->setData(FormKey::FORM_KEY, $this->request->getParam(UrlInterface::SECRET_KEY_PARAM_NAME));
+                    $session_storage->setData(
+                        FormKey::FORM_KEY,
+                        $this->request->getParam(UrlInterface::SECRET_KEY_PARAM_NAME)
+                    );
                     $session_storage->setData(self::IS_FIRST_VISIT, false);
                     $session_storage->setData(self::KEY, $user);
                     $session_storage->setData(self::STATUS, AdminSessionInfo::LOGGED_IN);
                 }
             }
             /** refresh the cookie, keep it fresh */
-            if($data) {
+            if ($data) {
                 $this->setCustomCookie($data->getId());
             }
         }
@@ -102,7 +116,9 @@ class BackendSessionPlugin
     public function setCustomCookie(string $content)
     {
         static $hasrun;
-        if($hasrun) return;
+        if ($hasrun) {
+            return;
+        }
         $hasrun = true;
         $publicCookieMetadata = $this->cookieMetadataFactory->createPublicCookieMetadata();
         $publicCookieMetadata->setDurationOneYear();
@@ -127,7 +143,7 @@ class BackendSessionPlugin
         $content = $this->cookieManager->getCookie(
             self::COOKIE
         );
-        if(!is_null($content)) {
+        if (!is_null($content)) {
             return $this->encryptor->decrypt($content);
         }
         return null;
