@@ -1,6 +1,6 @@
 {
   "name": "tschallacka/stay-logged-in",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "",
   "type": "magento2-module",
   "require": {
