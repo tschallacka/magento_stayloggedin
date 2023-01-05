@@ -1,6 +1,6 @@
 {
   "name": "tschallacka/stay-logged-in",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
   "type": "magento2-module",
   "require": {
@@ -8,7 +8,7 @@
     "magento/module-backend": "*"
   },
   "license": [
-    "Proprietary"
+    "MIT"
   ],
   "scripts": {
       "test": [
